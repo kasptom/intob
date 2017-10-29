@@ -4,14 +4,7 @@ from math import pi
 class Direction:
     ang = [-180.0] + [-157.5 + k * 45.0 for k in range(8)] + [180]
     # indexes in directions array
-    N = 0
-    NE = 1
-    E = 2
-    SE = 3
-    S = 4
-    SW = 5
-    W = 6
-    NW = 7
+    N, NE, E, SE, S, SW, W, NW = 0, 1, 2, 3, 4, 5, 6, 7
 
     @staticmethod
     def get_direction(angle):

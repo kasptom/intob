@@ -17,7 +17,6 @@ class Direction:
     def get_direction(angle):
         direction = 0
         angle_deg = angle / pi * 180
-
         if Direction.ang[0] <= angle_deg < Direction.ang[1] or Direction.ang[8] <= angle_deg <= Direction.ang[9]:
             direction = Direction.S
         if Direction.ang[1] <= angle_deg < Direction.ang[2]:
@@ -34,6 +33,5 @@ class Direction:
             direction = Direction.E
         if Direction.ang[7] <= angle_deg < Direction.ang[8]:
             direction = Direction.SE
-        print(angle_deg, " ", direction)
         return direction
 

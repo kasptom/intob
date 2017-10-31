@@ -2,15 +2,16 @@ import tensorflow as tf
 
 from model.PenChar import PenChar
 from utils.UjiPencharsParser import UjiPencharsParser
+from utils.penchars_mapping import CLASSES_NUMBER, SAMPLES_PER_WRITER
 
 
 class Solver:
     def __init__(self, penchars):
         self.penchars = penchars
         self.x = tf.placeholder(tf.float32, shape=[None, 55])
-        self.y_ = tf.placeholder(tf.float32, shape=[None, 64])
-        self.W = tf.Variable(tf.zeros([55, 64]))
-        self.b = tf.Variable(tf.zeros([64]))
+        self.y_ = tf.placeholder(tf.float32, shape=[None, CLASSES_NUMBER])
+        self.W = tf.Variable(tf.zeros([55, CLASSES_NUMBER]))
+        self.b = tf.Variable(tf.zeros([CLASSES_NUMBER]))
         self.y = tf.matmul(self.x, self.W) + self.b
 
         self.cross_entropy = tf.reduce_mean(
@@ -24,13 +25,12 @@ class Solver:
         penchar_vectors = PenChar.to_vectors(self.penchars)
 
         for i in range(50):  # 50 out of 60 writers
-            # 194 - samples per writer
-            train_vecs = penchar_vectors[i * 194:(i + 1) * 194]
+            train_vecs = penchar_vectors[i * SAMPLES_PER_WRITER:(i + 1) * SAMPLES_PER_WRITER]
             batch_xs = [penchar_data[0] for penchar_data in train_vecs]
             batch_ys = [penchar_data[1] for penchar_data in train_vecs]
             sess.run(self.train_step, feed_dict={self.x: batch_xs, self.y_: batch_ys})
 
-        test_vecs = penchar_vectors[11640-1164:11640]
+        test_vecs = penchar_vectors[50 * SAMPLES_PER_WRITER:60 * SAMPLES_PER_WRITER]
         # cs_vecs = penchar_vectors[1000:1164]
         # test trained model
         test_x = [penchar_data[0] for penchar_data in test_vecs]

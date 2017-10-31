@@ -1,4 +1,5 @@
 from model.PenChar import PenChar
+from utils.penchars_mapping import mapping
 
 
 class UjiPencharsParser:
@@ -15,6 +16,10 @@ class UjiPencharsParser:
                     penchar = PenChar()
                     parts = line.split(sep=" ", maxsplit=3)
                     penchar.character_id = parts[1]
+
+                    if penchar.character_id not in mapping:
+                        # print("character: " + penchar.character_id + "not in a mapping")
+                        continue
 
                     line = next(iter_file)
                     parts = line.lstrip().split(sep=" ", maxsplit=2)
@@ -36,6 +41,7 @@ class UjiPencharsParser:
                         if point_b is not None:
                             penchar.stroke_points.append(point_b)
                     penchars.append(penchar)
+        print("TOTAL SAMPLES: ", len(penchars))
         return penchars
 
 

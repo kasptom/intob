@@ -39,14 +39,14 @@ class UjiPencharsParser:
         return penchars
 
 
-penchars = UjiPencharsParser.parse("../data/ujipenchars2.txt")
-print(len(penchars))
-o_entity = [penchar for penchar in penchars if penchar.character_id == 'o'][0]
-z_entity = [penchar for penchar in penchars if penchar.character_id == ';'][0]
-o_entity.print_penchar()
-z_entity.print_penchar()
-
-z_entity.print_stroke_info()
-x, y = z_entity.to_vector()
-print(x)
-print(y)
+# penchars = UjiPencharsParser.parse("../data/ujipenchars2.txt")
+# print(len(penchars))
+# o_entity = [penchar for penchar in penchars if penchar.character_id == 'o'][0]
+# z_entity = [penchar for penchar in penchars if penchar.character_id == ';'][0]
+# o_entity.print_penchar()
+# z_entity.print_penchar()
+#
+# z_entity.print_stroke_info()
+# x, y = z_entity.to_vector()
+# print(x)
+# print(y)

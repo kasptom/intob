@@ -1,8 +1,9 @@
 import math
+
 import numpy as np
 
 from model.Direction import Direction
-from model.penchars_mapping import mapping
+from utils.penchars_mapping import mapping
 
 PI = math.pi
 
@@ -50,7 +51,8 @@ class PenChar:
 
         x_vector[48:54] = self.points_per_stroke.flatten()
         x_vector[54] = self.strokes_number
-        y_vector = [mapping.get(self.character_id)]
+        y_vector = [0] * 64
+        y_vector[mapping.get(self.character_id)] = 1
 
         return x_vector, y_vector
 
@@ -61,10 +63,10 @@ class PenChar:
         return xs, ys
 
     @staticmethod
-    def to_vectors(entities):
+    def to_vectors(penchars):
         """
         Converts each entity from entities to the list of x and y vectors
-        :param entities:
-        :return: x (n x 55), y - (n x 65) - where n is the length of the entities list
+        :param penchars:
+        :return: x (n x 55), y - (n x 64) - where n is the length of the entities list
         """
-        pass
+        return [penchar.to_vector() for penchar in penchars]

@@ -23,15 +23,15 @@ class Solver:
 
         penchar_vectors = PenChar.to_vectors(self.penchars)
 
-        train_vecs = penchar_vectors[:900]
-        test_vecs = penchar_vectors[900:1164]
+        for i in range(50):  # 50 out of 60 writers
+            # 194 - samples per writer
+            train_vecs = penchar_vectors[i * 194:(i + 1) * 194]
+            batch_xs = [penchar_data[0] for penchar_data in train_vecs]
+            batch_ys = [penchar_data[1] for penchar_data in train_vecs]
+            sess.run(self.train_step, feed_dict={self.x: batch_xs, self.y_: batch_ys})
+
+        test_vecs = penchar_vectors[11640-1164:11640]
         # cs_vecs = penchar_vectors[1000:1164]
-
-        batch_xs = [penchar_data[0] for penchar_data in train_vecs]
-        batch_ys = [penchar_data[1] for penchar_data in train_vecs]
-
-        sess.run(self.train_step, feed_dict={self.x: batch_xs, self.y_: batch_ys})
-
         # test trained model
         test_x = [penchar_data[0] for penchar_data in test_vecs]
         test_y = [penchar_data[1] for penchar_data in test_vecs]
@@ -39,6 +39,7 @@ class Solver:
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         print(sess.run(accuracy, feed_dict={self.x: test_x,
                                             self.y_: test_y}))
+
 
 penchars = UjiPencharsParser.parse("../data/ujipenchars2.txt")
 solver = Solver(penchars)

@@ -1,3 +1,2 @@
-from utils.penchars_mapping_2 import SAMPLES_PER_WRITER
-from utils.penchars_mapping_2 import CLASSES_NUMBER
-from utils.penchars_mapping_2 import mapping
+# noinspection PyUnresolvedReferences
+from utils.penchars_mapping_2 import SAMPLES_PER_WRITER, CLASSES_NUMBER, mapping

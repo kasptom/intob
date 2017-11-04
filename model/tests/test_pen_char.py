@@ -3,7 +3,7 @@ from unittest import TestCase
 from model.PenChar import PenChar
 
 
-class TestPenchar(TestCase):
+class TestPenChar(TestCase):
     def test_xy_from_points(self):
         self.point_a = (0, 10)
         self.point_b = (0, 0)
@@ -29,7 +29,7 @@ class TestPenchar(TestCase):
             (517, 1373), (602, 1367), (689, 1360), (774, 1354), (853, 1349), (921, 1345)
         ]]
         print("stroke points length: ", len(stroke_points[0]))
-        penchar = PenChar(character_id, strokes_number, stroke_points)
-        penchar.print_penchar()
-        penchar.draw_normalized_path()
-        penchar.draw_path()
+        pen_char = PenChar(character_id, strokes_number, stroke_points)
+        pen_char.print_penchar()
+        pen_char.draw_normalized_path()
+        pen_char.draw_path()

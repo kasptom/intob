@@ -10,10 +10,10 @@ from utils.penchars_mapping import mapping
 
 PI = math.pi
 M = 16  # number of points in the path
-H, W = 3, 3  # resolution of the rectangle with a character
+W, H = 3, 3  # resolution of the rectangle with a character
 MAX_STROKES = 6
 DISPLAY_IF_WARN = False
-
+RESOLUTION = (3100, 2100)
 
 class PenChar:
     def __init__(self, character_id, strokes_number, stroke_points, unique_identifier=None, debug=False):
@@ -34,6 +34,8 @@ class PenChar:
         self.normalized_path_size = 0
         self.status = "OK"
         self.create_normalized_path()
+
+        self.segments_directions = self.compute_directions()
 
     def compute_section_length(self):
         path_length = 0
@@ -68,34 +70,34 @@ class PenChar:
         print("M=", M)
         print('---')
 
-    def draw_normalized_path(self):
-        im = Image.new('RGB', (300, 500), (255, 255, 255))
+    def draw_normalized_path(self, title=None):
+        im = Image.new('RGB', (420, 620), (255, 255, 255))
         draw = ImageDraw.Draw(im)
         for i in range(self.strokes_number):
             for j in range(len(self.normalized_path[i]) - 1):
                 a = self.normalized_path[i][j]
-                a = (a[0] / 4, a[1] / 4)
+                a = (a[0] / 5, a[1] / 5)
                 b = self.normalized_path[i][j + 1]
-                b = (b[0] / 4, b[1] / 4)
+                b = (b[0] / 5, b[1] / 5)
                 draw.line(a + b, fill=255, width=1)
                 PenChar.draw_dot(draw, a)
                 PenChar.draw_dot(draw, b)
-        im.show()
+        im.show(title)
         return im
 
-    def draw_path(self):
-        im = Image.new('RGB', (300, 500), (255, 255, 255))
+    def draw_path(self, title=None):
+        im = Image.new('RGB', (420, 620), (255, 255, 255))
         draw = ImageDraw.Draw(im)
         for i in range(self.strokes_number):
             for j in range(len(self.strokes_points[i]) - 1):
                 a = self.strokes_points[i][j]
-                a = (a[0] / 4, a[1] / 4)
+                a = (a[0] / 5, a[1] / 5)
                 b = self.strokes_points[i][j + 1]
-                b = (b[0] / 4, b[1] / 4)
+                b = (b[0] / 5, b[1] / 5)
                 draw.line(a + b, fill=255, width=1)
                 PenChar.draw_dot(draw, a)
                 PenChar.draw_dot(draw, b)
-        im.show()
+        im.show(title)
         return im
 
     @staticmethod
@@ -193,3 +195,12 @@ class PenChar:
                 path_image.close()
                 npath_image.close()
         self.normalized_path = normalized_path
+
+    def compute_directions(self):
+        segments_directions = [[0 for _ in range(8)] for _ in range(W * H)]
+        for i in range(self.strokes_number):
+            stroke = self.normalized_path[i]
+            for j in range(len(stroke)):
+                pass
+            # TODO preprocess the image (slant, center of gravity and resolution)
+        return segments_directions

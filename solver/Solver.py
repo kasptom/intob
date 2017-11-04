@@ -40,7 +40,7 @@ class Solver:
         print(sess.run(accuracy, feed_dict={self.x: test_x,
                                             self.y_: test_y}))
 
-
-penchars = UjiPencharsParser.parse("../data/ujipenchars2.txt")
+parser = UjiPencharsParser(debug=False)
+penchars = parser.parse("../data/ujipenchars2.txt")
 solver = Solver(penchars)
 solver.train()

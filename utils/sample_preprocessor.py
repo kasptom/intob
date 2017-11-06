@@ -17,27 +17,18 @@ class SamplePreprocessor:
         x_range = SamplePreprocessor.compute_x_range(rotated_flatten_sample)
         y_range = SamplePreprocessor.compute_y_range(rotated_flatten_sample)
 
+        cropped_sample = SamplePreprocessor.crop_sample(x_range, y_range, rotated_sample)
+
         side_size = max(x_range[1] - x_range[0], y_range[1] - y_range[0])
         scale = SQUARE_PICTURE_SIDE / side_size
 
-        scaled_sample = SamplePreprocessor.scale_sample(scale, rotated_sample)
+        scaled_sample = SamplePreprocessor.scale_sample(scale, cropped_sample)
 
         return scaled_sample
 
     @staticmethod
     def flatten_sample(sample):
         return [point for stroke in sample for point in stroke]
-
-    def update_range(self, point):
-        (x, y) = point
-        if x < self.x_range[0]:
-            self.x_range[0] = x
-        if x > self.x_range[1]:
-            self.x_range[1] = x
-        if y < self.y_range[0]:
-            self.y_range[0] = y
-        if y > self.y_range[1]:
-            self.y_range[1] = y
 
     @staticmethod
     def compute_x_range(flatten_sample):
@@ -129,3 +120,23 @@ class SamplePreprocessor:
             stroke = [(point[0] * scale, point[1] * scale) for point in stroke]
             scaled_sample.append(stroke)
         return scaled_sample
+
+    @staticmethod
+    def crop_sample(x_range, y_range, sample):
+        cropped_sample = []
+        x_side = x_range[1] - x_range[0]
+        y_side = y_range[1] - y_range[0]
+
+        tvec = [0, 0]
+        if x_side < y_side:
+            tvec[0] = x_range[0] - (y_side - x_side) / 2
+            tvec[1] = y_range[0]
+        else:
+            tvec[0] = x_range[0]
+            tvec[1] = y_range[0] - (x_side - y_side) / 2
+
+        for i in range(len(sample)):
+            stroke = sample[i]
+            stroke = [(point[0] - tvec[0], point[1] - tvec[1]) for point in stroke]
+            cropped_sample.append(stroke)
+        return cropped_sample

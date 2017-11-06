@@ -2,6 +2,7 @@ import math
 
 SQUARE_PICTURE_SIDE = 600
 
+
 class SamplePreprocessor:
     @staticmethod
     def preprocess_sample(sample):
@@ -10,7 +11,7 @@ class SamplePreprocessor:
         centre_of_mass = SamplePreprocessor.center_of_mass(flatten_sample)
         slant = SamplePreprocessor.calculate_glyph_slant(sample)
 
-        rotated_sample = SamplePreprocessor.rotate_sample(sample, centre_of_mass, slant)
+        rotated_sample = SamplePreprocessor.rotate_sample(sample, centre_of_mass, -slant)
 
         rotated_flatten_sample = SamplePreprocessor.flatten_sample(rotated_sample)
         x_range = SamplePreprocessor.compute_x_range(rotated_flatten_sample)
@@ -21,9 +22,7 @@ class SamplePreprocessor:
 
         scaled_sample = SamplePreprocessor.scale_sample(scale, rotated_sample)
 
-
-        for i in range(len(sample)):
-            stroke = sample[i]
+        return scaled_sample
 
     @staticmethod
     def flatten_sample(sample):

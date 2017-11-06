@@ -1,6 +1,7 @@
 import math
 
 import numpy as np
+from utils.sample_preprocessor import SamplePreprocessor
 from PIL import Image, ImageDraw
 from pip._vendor.distlib.compat import raw_input
 
@@ -14,6 +15,7 @@ W, H = 3, 3  # resolution of the rectangle with a character
 MAX_STROKES = 6
 DISPLAY_IF_WARN = False
 RESOLUTION = (3100, 2100)
+
 
 class PenChar:
     def __init__(self, character_id, strokes_number, stroke_points, unique_identifier=None, debug=False):
@@ -202,5 +204,5 @@ class PenChar:
             stroke = self.normalized_path[i]
             for j in range(len(stroke)):
                 pass
-            # TODO preprocess the image (slant, center of gravity and resolution)
+                # TODO preprocess the image (slant, center of gravity and resolution)
         return segments_directions

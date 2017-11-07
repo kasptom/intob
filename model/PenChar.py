@@ -11,11 +11,10 @@ from utils.penchars_mapping import CLASSES_NUMBER
 from utils.penchars_mapping import mapping
 
 PI = math.pi
-M = 16  # number of points in the path
-W, H = 5, 5  # resolution of the rectangle with a character
+M = 20  # number of points in the path
+W, H = 4, 4  # resolution of the rectangle with a character
 MAX_STROKES = 6
 DISPLAY_IF_WARN = False
-RESOLUTION = (3100, 2100)
 
 
 class PenChar:

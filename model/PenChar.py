@@ -1,8 +1,10 @@
 import math
 
 import numpy as np
+from utils.sample_preprocessor import SamplePreprocessor
 from PIL import Image, ImageDraw
 from pip._vendor.distlib.compat import raw_input
+from utils.sample_preprocessor import SQUARE_PICTURE_SIDE
 
 from model.Direction import Direction
 from utils.penchars_mapping import CLASSES_NUMBER
@@ -10,10 +12,11 @@ from utils.penchars_mapping import mapping
 
 PI = math.pi
 M = 16  # number of points in the path
-W, H = 3, 3  # resolution of the rectangle with a character
+W, H = 5, 5  # resolution of the rectangle with a character
 MAX_STROKES = 6
 DISPLAY_IF_WARN = False
 RESOLUTION = (3100, 2100)
+
 
 class PenChar:
     def __init__(self, character_id, strokes_number, stroke_points, unique_identifier=None, debug=False):
@@ -26,7 +29,7 @@ class PenChar:
         self.character_id = character_id  # character UTF-8 id
         self.unique_identifier = unique_identifier
         self.strokes_number = strokes_number  # number of strokes - max 6
-        self.strokes_points = stroke_points
+        self.strokes_points = SamplePreprocessor.preprocess_sample(stroke_points)
         self.section_length = self.compute_section_length()
         self.debug = debug
 
@@ -35,7 +38,8 @@ class PenChar:
         self.status = "OK"
         self.create_normalized_path()
 
-        self.segments_directions = self.compute_directions()
+        self.segments_directions = None
+        self.compute_directions()
 
     def compute_section_length(self):
         path_length = 0
@@ -50,11 +54,11 @@ class PenChar:
     def distance(point_a, point_b):
         return math.sqrt(math.pow(point_a[0] - point_b[0], 2) + math.pow(point_a[1] - point_b[1], 2))
 
-    def increase_vectors_number(self, stroke_id, point_a, point_b):
+    def increase_vectors_number(self, segment_id, point_a, point_b):
         x, y = PenChar.xy_from_points(point_a, point_b)
         rads = math.atan2(x, y)
         direction_to_increase = Direction.get_direction(rads)
-        self.num_directions[stroke_id, direction_to_increase] += 1
+        self.segments_directions[segment_id[0]][segment_id[1]][direction_to_increase] += 1
 
     def print_penchar(self):
         print('---')
@@ -105,21 +109,11 @@ class PenChar:
         draw.ellipse((xy[0] - 2, xy[1] - 2, xy[0] + 2, xy[1] + 2), fill='blue', outline='blue')
 
     def to_vector(self):
-        x_vector = np.array([0] * 55)
-        # 8 directions 6 strokes => 48 values
-        x_vector[:48] = self.num_directions.flatten()
-        for i in range(self.strokes_number):
-            start = i * 8
-            end = (i + 1) * 8
-            v_func = np.vectorize(lambda p: round(100 * p / self.points_per_stroke[i]))
-            # e.g x_vector[9] is the percentage of vectors in NE direction of the 2nd stroke
-            x_vector[start:end] = v_func(x_vector[start:end])
-
-        x_vector[48:54] = self.points_per_stroke.flatten()
-        x_vector[54] = self.strokes_number
+        x_vector = np.array(self.segments_directions)
+        # 9 segments 8 directions => 72 values
+        x_vector = x_vector.flatten()
         y_vector = [0] * CLASSES_NUMBER
         y_vector[mapping.get(self.character_id)] = 1
-
         return x_vector, y_vector
 
     @staticmethod
@@ -133,7 +127,7 @@ class PenChar:
         """
         Converts each entity from entities to the list of x and y vectors
         :param penchars:
-        :return: x (n x 55), y - (n x CLASSES_NUMBER) - where n is the length of the entities list
+        :return: x (n x 72), y - (n x CLASSES_NUMBER) - where n is the length of the entities list
         """
         return [penchar.to_vector() for penchar in penchars]
 
@@ -197,10 +191,17 @@ class PenChar:
         self.normalized_path = normalized_path
 
     def compute_directions(self):
-        segments_directions = [[0 for _ in range(8)] for _ in range(W * H)]
+        self.segments_directions = [[[0 for _ in range(8)] for _ in range(W)] for _ in range(H)]
         for i in range(self.strokes_number):
             stroke = self.normalized_path[i]
-            for j in range(len(stroke)):
-                pass
-            # TODO preprocess the image (slant, center of gravity and resolution)
-        return segments_directions
+            for j in range(2, len(stroke)):
+                point_a = stroke[j - 1]
+                point_b = stroke[j]
+                segment_id = PenChar.get_segment_of_point(point_a)
+                self.increase_vectors_number(segment_id, point_a, point_b)
+
+    @staticmethod
+    def get_segment_of_point(point):
+        w = int((W-1) * (point[0] / SQUARE_PICTURE_SIDE))
+        h = int((H-1) * (point[1] / SQUARE_PICTURE_SIDE))
+        return w, h

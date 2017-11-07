@@ -1,6 +1,8 @@
 from model.PenChar import PenChar
 from utils.penchars_mapping import mapping
 
+SHOW_GLYPHS = False
+
 
 class UjiPencharsParser:
     def __init__(self, debug=False):
@@ -85,31 +87,24 @@ class UjiPencharsParser:
             self.y_range[1] = xy[1]
             self.y_range_names[1] = sample_id
 
+
 parser = UjiPencharsParser(debug=False)
 penchars = parser.parse("../data/ujipenchars2.txt")
 
-# print(len(penchars))
-x_min_entity = [penchar for penchar in penchars if penchar.unique_identifier == parser.x_range_names[0]][0]
-x_min_entity.draw_normalized_path()
-x_min_entity.draw_path("x_min")
+if SHOW_GLYPHS:
+    # print(len(penchars))
+    x_min_entity = [penchar for penchar in penchars if penchar.unique_identifier == parser.x_range_names[0]][0]
+    x_min_entity.draw_normalized_path()
+    x_min_entity.draw_path("x_min")
 
-x_max_entity = [penchar for penchar in penchars if penchar.unique_identifier == parser.x_range_names[1]][0]
-x_max_entity.draw_normalized_path()
-x_max_entity.draw_path("x_max")
+    x_max_entity = [penchar for penchar in penchars if penchar.unique_identifier == parser.x_range_names[1]][0]
+    x_max_entity.draw_normalized_path()
+    x_max_entity.draw_path("x_max")
 
-y_min_entity = [penchar for penchar in penchars if penchar.unique_identifier == parser.y_range_names[0]][0]
-y_min_entity.draw_normalized_path()
-y_min_entity.draw_path("y_min")
+    y_min_entity = [penchar for penchar in penchars if penchar.unique_identifier == parser.y_range_names[0]][0]
+    y_min_entity.draw_normalized_path()
+    y_min_entity.draw_path("y_min")
 
-y_max_entity = [penchar for penchar in penchars if penchar.unique_identifier == parser.y_range_names[1]][0]
-y_max_entity.draw_normalized_path()
-y_max_entity.draw_path("y_max")
-
-# z_entity = [penchar for penchar in penchars if penchar.character_id == ';'][0]
-# o_entity.print_penchar()
-# z_entity.print_penchar()
-#
-# z_entity.print_stroke_info()
-# x, y = z_entity.to_vector()
-# print(x)
-# print(y)
+    y_max_entity = [penchar for penchar in penchars if penchar.unique_identifier == parser.y_range_names[1]][0]
+    y_max_entity.draw_normalized_path()
+    y_max_entity.draw_path("y_max")

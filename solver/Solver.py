@@ -3,14 +3,18 @@ import tensorflow as tf
 from model.PenChar import PenChar
 from utils.UjiPencharsParser import UjiPencharsParser
 from utils.penchars_mapping import CLASSES_NUMBER, SAMPLES_PER_WRITER
+from model.PenChar import W
+from model.PenChar import H
+
+X_SIZE = W * H * 8
 
 
 class Solver:
     def __init__(self, penchars):
         self.penchars = penchars
-        self.x = tf.placeholder(tf.float32, shape=[None, 55])
+        self.x = tf.placeholder(tf.float32, shape=[None, X_SIZE])
         self.y_ = tf.placeholder(tf.float32, shape=[None, CLASSES_NUMBER])
-        self.W = tf.Variable(tf.zeros([55, CLASSES_NUMBER]))
+        self.W = tf.Variable(tf.zeros([X_SIZE, CLASSES_NUMBER]))
         self.b = tf.Variable(tf.zeros([CLASSES_NUMBER]))
         self.y = tf.matmul(self.x, self.W) + self.b
 
@@ -39,6 +43,7 @@ class Solver:
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         print(sess.run(accuracy, feed_dict={self.x: test_x,
                                             self.y_: test_y}))
+
 
 parser = UjiPencharsParser(debug=False)
 penchars = parser.parse("../data/ujipenchars2.txt")

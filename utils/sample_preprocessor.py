@@ -78,7 +78,7 @@ class SamplePreprocessor:
                 x, y = SamplePreprocessor.xy_from_points(point_a, point_b)
                 y = abs(y)
                 rads = math.atan2(x, y)
-                if abs(rads) <= 50.0:
+                if abs(rads) <= (50.0 / 180) * math.pi:
                     slant += rads
                     vectors_count += 1
         slant = slant / vectors_count

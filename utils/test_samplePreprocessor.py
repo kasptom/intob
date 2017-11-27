@@ -62,7 +62,7 @@ class TestSamplePreprocessor(TestCase):
         character_id = 'h'
         # character_id = 'I_slant'
         glyph = test_glyphs[character_id]
-        penchar = PenChar(character_id, glyph['strokes_number'], glyph['strokes'], 'tst_h', preprocess=False)
+        penchar = PenChar(character_id, glyph['strokes_number'], glyph['strokes'], 'tst_h', preprocess=False, debug=True)
         penchar.draw_path()
 
         # preprocessed_stroke_points = SamplePreprocessor.preprocess_sample(glyph['strokes'])

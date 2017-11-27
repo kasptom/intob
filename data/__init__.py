@@ -8,7 +8,7 @@ _UJI_NPY = os.path.join(_DIR, "ujipenchars2.npy")
 _UJI_TXT = os.path.join(_DIR, "ujipenchars2.txt")
 
 
-def char_dicts():
+def char_dicts(mapping=None):
     try:
         dictchars = np.load(_UJI_NPY)
     except FileNotFoundError:
@@ -16,11 +16,11 @@ def char_dicts():
         from utils.penchars_reader import read_file
         dictchars = read_file(_UJI_TXT)
         np.save(_UJI_NPY, dictchars)
-    return dictchars
+    return filter(lambda c: c['character_id'] in mapping, dictchars)
 
 
-def raw_chars():
-    return [RawChar(**d) for d in char_dicts()]
+def raw_chars(mapping=None):
+    return [RawChar(**d) for d in char_dicts(mapping)]
 
 
 def _stroke_length(stroke):

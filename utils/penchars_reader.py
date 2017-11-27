@@ -1,11 +1,9 @@
 import numpy as np
 
-from utils.penchars_mapping import mapping
-
 
 def read_file(file_name: str):
     penchars = []
-    with open(file_name, mode="r") as file:
+    with open(file_name) as file:
         iter_file = iter(file)
         for line in iter_file:
             if line.lstrip().startswith("//"):
@@ -14,9 +12,6 @@ def read_file(file_name: str):
                 parts = line.split(" ", 3)
                 character_id = parts[1]
                 sample_id = parts[2].rstrip()
-
-                if character_id not in mapping:
-                    continue
 
                 line = next(iter_file)
                 parts = line.lstrip().split(" ", 2)

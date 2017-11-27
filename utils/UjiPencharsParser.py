@@ -26,7 +26,7 @@ class UjiPencharsParser:
                 if line.lstrip().startswith("//"):
                     continue
                 elif line.startswith("WORD"):
-                    parts = line.split(sep=" ", maxsplit=3)
+                    parts = line.split(" ", 3)
                     character_id = parts[1]
                     sample_id = parts[2].rstrip()
                     unique_identifier = character_id + "_" + sample_id
@@ -39,14 +39,14 @@ class UjiPencharsParser:
                         self.test_count += 1
 
                     line = next(iter_file)
-                    parts = line.lstrip().split(sep=" ", maxsplit=2)
+                    parts = line.lstrip().split(" ", 2)
 
                     strokes_number = int(parts[1])
                     stroke_points = [[] for _ in range(strokes_number)]
 
                     for stroke_id in range(strokes_number):
                         line = next(iter_file)
-                        parts = line.lstrip().split(sep=" ")
+                        parts = line.lstrip().split(" ")
                         points_number = int(parts[1])
                         # every point consists of two coordinates
                         # points start from the 4th element of the line (3rd index)

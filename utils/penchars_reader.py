@@ -40,12 +40,3 @@ def read_file(file_name: str):
                     'strokes': strokes
                 })
     return penchars
-
-
-def main():
-    penchars = read_file("../data/ujipenchars2.txt")
-    print(penchars[0])
-
-
-if __name__ == '__main__':
-    main()

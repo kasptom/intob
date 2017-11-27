@@ -18,7 +18,7 @@ DISPLAY_IF_WARN = False
 
 
 class PenChar:
-    def __init__(self, character_id, strokes_number, stroke_points, unique_identifier=None, debug=False):
+    def __init__(self, character_id, strokes_number, stroke_points, unique_identifier=None, debug=False, preprocess=True):
         """
         :param character_id: e.g. "a"
         :param strokes_number: number of lines used to draw a character
@@ -28,7 +28,7 @@ class PenChar:
         self.character_id = character_id  # character UTF-8 id
         self.unique_identifier = unique_identifier
         self.strokes_number = strokes_number  # number of strokes - max 6
-        self.strokes_points = SamplePreprocessor.preprocess_sample(stroke_points)
+        self.strokes_points = SamplePreprocessor.preprocess_sample(stroke_points) if preprocess else stroke_points
         self.section_length = self.compute_section_length()
         self.debug = debug
 
@@ -38,7 +38,8 @@ class PenChar:
         self.create_normalized_path()
 
         self.segments_directions = None
-        self.compute_directions()
+        if preprocess:
+            self.compute_directions()
 
     def compute_section_length(self):
         path_length = 0

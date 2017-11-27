@@ -4,6 +4,9 @@ SQUARE_PICTURE_SIDE = 600
 
 
 class SamplePreprocessor:
+    def __init__(self):
+        pass
+
     @staticmethod
     def preprocess_sample(sample):
         flatten_sample = SamplePreprocessor.flatten_sample(sample)
@@ -11,7 +14,7 @@ class SamplePreprocessor:
         centre_of_mass = SamplePreprocessor.center_of_mass(flatten_sample)
         slant = SamplePreprocessor.calculate_glyph_slant(sample)
 
-        rotated_sample = SamplePreprocessor.rotate_sample(sample, centre_of_mass, -slant)
+        rotated_sample = SamplePreprocessor.rotate_sample(sample, centre_of_mass, slant)
 
         rotated_flatten_sample = SamplePreprocessor.flatten_sample(rotated_sample)
         x_range = SamplePreprocessor.compute_x_range(rotated_flatten_sample)

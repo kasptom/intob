@@ -1,7 +1,7 @@
 import tensorflow as tf
 
 from model.PenChar import PenChar
-from utils.UjiPencharsParser import UjiPencharsParser
+from utils.penchars_reader import UjiPencharsReader
 from utils.penchars_mapping import CLASSES_NUMBER, SAMPLES_PER_WRITER
 from model.PenChar import W
 from model.PenChar import H
@@ -45,7 +45,8 @@ class Solver:
                                             self.y_: test_y}))
 
 
-parser = UjiPencharsParser(debug=False)
-penchars = parser.parse("../data/ujipenchars2.txt")
-solver = Solver(penchars)
-solver.train()
+if __name__ == '__main__':
+    parser = UjiPencharsReader(debug=False)
+    penchars = parser.parse("../data/ujipenchars2.txt")
+    solver = Solver(penchars)
+    solver.train()

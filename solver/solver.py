@@ -1,10 +1,10 @@
 import tensorflow as tf
 
-from model.PenChar import PenChar
-from utils.penchars_reader import UjiPencharsReader
-from utils.penchars_mapping import CLASSES_NUMBER, SAMPLES_PER_WRITER
-from model.PenChar import W
+import data
 from model.PenChar import H
+from model.PenChar import PenChar
+from model.PenChar import W
+from utils.mappings.penchars_mapping import CLASSES_NUMBER, SAMPLES_PER_WRITER, mapping
 
 X_SIZE = W * H * 8
 
@@ -46,7 +46,6 @@ class Solver:
 
 
 if __name__ == '__main__':
-    parser = UjiPencharsReader(debug=False)
-    penchars = parser.parse("../data/ujipenchars2.txt")
+    penchars = data.preprocessed_chars(mapping)
     solver = Solver(penchars)
     solver.train()

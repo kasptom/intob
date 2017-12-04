@@ -107,13 +107,8 @@ def rotate_strokes(strokes: List[np.ndarray], centre_of_mass, angle_rads):
     return rotated_strokes
 
 
-def scale_sample(scale, sample):
-    scaled_sample = []
-    for i in range(len(sample)):
-        stroke = sample[i]
-        stroke = [(point[0] * scale, point[1] * scale) for point in stroke]
-        scaled_sample.append(stroke)
-    return scaled_sample
+def scale_sample(scale, strokes):
+    return [stroke * scale for stroke in strokes]
 
 
 def crop_sample(x_range, y_range, strokes):

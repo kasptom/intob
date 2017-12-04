@@ -2,13 +2,11 @@ from typing import List
 
 import numpy as np
 
-from utils.mappings.penchars_mapping import mapping
-
 SQUARE_PICTURE_SIDE = 600
 
 
 def preprocess(raw_char):
-    centre_of_mass = center_of_mass(raw_char.strokes)
+    centre_of_mass = _centre_of_mass(raw_char.strokes)
     slant = calculate_glyph_slant(raw_char.strokes)
     rotated_strokes = rotate_strokes(raw_char.strokes, centre_of_mass, -slant)
     x_range = compute_x_range(rotated_strokes)
@@ -23,8 +21,8 @@ def preprocess(raw_char):
     return scaled_sample
 
 
-def _centre_of_mass(raw_sample):
-    merged_strokes = np.concatenate(tuple(raw_sample.strokes))
+def _centre_of_mass(strokes):
+    merged_strokes = np.concatenate(tuple(strokes))
     x_values = [point[0] for point in merged_strokes]
     y_values = [point[1] for point in merged_strokes]
     points_number = float(len(x_values))
@@ -50,15 +48,6 @@ def compute_coordinate_range(strokes, coordinate_index):
     coord_min = np.amin(merged_strokes, axis=coordinate_index)
     coord_max = np.amax(merged_strokes, axis=coordinate_index)
     return coord_min, coord_max
-
-
-def center_of_mass(flatten_sample):
-    x_values = [point[0] for point in flatten_sample]
-    y_values = [point[1] for point in flatten_sample]
-    points_number = float(len(x_values))
-    sum_x = sum(x_values)
-    sum_y = sum(y_values)
-    return sum_x / points_number, sum_y / points_number
 
 
 def calculate_glyph_slant(sample):

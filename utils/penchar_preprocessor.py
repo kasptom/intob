@@ -31,10 +31,6 @@ def _centre_of_mass(strokes):
     return sum_x / points_number, sum_y / points_number
 
 
-def flatten_sample(sample):
-    return [point for stroke in sample for point in stroke]
-
-
 def compute_x_range(strokes):
     return compute_coordinate_range(strokes=strokes, coordinate_index=0)
 
@@ -85,13 +81,6 @@ def xy_from_points(a, b):
 
 
 def _rotate(point, origin, angle):
-    """
-    Rotate the point around origin by the angle (counter-clockwise)
-    :param origin: point around which we perform the rotation
-    :param point: point which position we want to change
-    :param angle: angle given in radians
-    :return: coordinates of the rotated point
-    """
     ox, oy = origin
     px, py = point
 
@@ -101,9 +90,21 @@ def _rotate(point, origin, angle):
 
 
 def rotate_strokes(strokes: List[np.ndarray], centre_of_mass, angle_rads):
+    """
+    Rotate the points around origin by the angle (counter-clockwise)
+    :param strokes:
+    :param centre_of_mass:
+    :param angle_rads:
+    :return:
+    """
     rotated_strokes = []
+    sin = np.math.sin(-angle_rads)  # counter-clockwise
+    cos = np.math.cos(-angle_rads)
+    rotation = np.array([[cos, -sin], [sin, cos]])
     for stroke in strokes:
-        rotated_strokes.append(np.apply_along_axis(_rotate, 1, stroke, centre_of_mass, angle_rads))
+        centered_stroke = stroke - centre_of_mass
+        rotated_stroke = np.dot(centered_stroke, rotation)
+        rotated_strokes.append(rotated_stroke + centre_of_mass)  # translate it back
     return rotated_strokes
 
 

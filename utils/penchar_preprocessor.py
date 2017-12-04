@@ -2,7 +2,6 @@ from typing import List
 
 import numpy as np
 
-import data
 from utils.mappings.penchars_mapping import mapping
 
 SQUARE_PICTURE_SIDE = 600
@@ -11,12 +10,11 @@ SQUARE_PICTURE_SIDE = 600
 def preprocess(raw_char):
     centre_of_mass = center_of_mass(raw_char.strokes)
     slant = calculate_glyph_slant(raw_char.strokes)
-    rotated_sample = rotate_sample(raw_char.strokes, centre_of_mass, -slant)
-    rotated_flatten_sample = flatten_sample(rotated_sample)
-    x_range = compute_x_range(rotated_flatten_sample)
-    y_range = compute_y_range(rotated_flatten_sample)
+    rotated_strokes = rotate_strokes(raw_char.strokes, centre_of_mass, -slant)
+    x_range = compute_x_range(rotated_strokes)
+    y_range = compute_y_range(rotated_strokes)
 
-    cropped_sample = crop_sample(x_range, y_range, rotated_sample)
+    cropped_sample = crop_sample(x_range, y_range, rotated_strokes)
 
     side_size = max(x_range[1] - x_range[0], y_range[1] - y_range[0])
     scale = SQUARE_PICTURE_SIDE / side_size
@@ -26,9 +24,9 @@ def preprocess(raw_char):
 
 
 def _centre_of_mass(raw_sample):
-    flattened_sample = np.concatenate(tuple(raw_sample.strokes))
-    x_values = [point[0] for point in flattened_sample]
-    y_values = [point[1] for point in flattened_sample]
+    merged_strokes = np.concatenate(tuple(raw_sample.strokes))
+    x_values = [point[0] for point in merged_strokes]
+    y_values = [point[1] for point in merged_strokes]
     points_number = float(len(x_values))
     sum_x = sum(x_values)
     sum_y = sum(y_values)
@@ -39,18 +37,18 @@ def flatten_sample(sample):
     return [point for stroke in sample for point in stroke]
 
 
-def compute_x_range(flatten_sample):
-    return compute_coordinate_range(flatten_sample=flatten_sample, coordinate_index=0)
+def compute_x_range(strokes):
+    return compute_coordinate_range(strokes=strokes, coordinate_index=0)
 
 
 def compute_y_range(sample):
-    return compute_coordinate_range(flatten_sample=sample, coordinate_index=1)
+    return compute_coordinate_range(strokes=sample, coordinate_index=1)
 
 
-def compute_coordinate_range(flatten_sample, coordinate_index):
-    coordinate_values = [point[coordinate_index] for point in flatten_sample]
-    coord_min = min(coordinate_values)
-    coord_max = max(coordinate_values)
+def compute_coordinate_range(strokes, coordinate_index):
+    merged_strokes = np.concatenate(tuple(strokes))
+    coord_min = np.amin(merged_strokes, axis=coordinate_index)
+    coord_max = np.amax(merged_strokes, axis=coordinate_index)
     return coord_min, coord_max
 
 
@@ -96,7 +94,7 @@ def xy_from_points(a, b):
     return xs, ys
 
 
-def _rotate(origin, point, angle):
+def _rotate(point, origin, angle):
     """
     Rotate the point around origin by the angle (counter-clockwise)
     :param origin: point around which we perform the rotation
@@ -112,11 +110,10 @@ def _rotate(origin, point, angle):
     return qx, qy
 
 
-def rotate_sample(strokes: List[np.ndarray], centre_of_mass, angle_rads):
+def rotate_strokes(strokes: List[np.ndarray], centre_of_mass, angle_rads):
     rotated_strokes = []
-    rotate = np.vectorize(lambda point: _rotate(centre_of_mass, point, angle_rads))
     for stroke in strokes:
-        rotated_strokes.append(rotate(stroke))
+        rotated_strokes.append(np.apply_along_axis(_rotate, 1, stroke, centre_of_mass, angle_rads))
     return rotated_strokes
 
 
@@ -147,7 +144,3 @@ def crop_sample(x_range, y_range, sample):
         stroke = [(point[0] - tvec[0], point[1] - tvec[1]) for point in stroke]
         cropped_sample.append(stroke)
     return cropped_sample
-
-
-if __name__ == '__main__':
-    preprocess(data.raw_chars(mapping))

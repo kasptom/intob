@@ -5,7 +5,7 @@ import numpy as np
 from model.Direction import Direction
 from utils.mappings.penchars_mapping import CLASSES_NUMBER
 from utils.mappings.penchars_mapping import mapping
-from utils.penchar_preprocessor import preprocess, SQUARE_PICTURE_SIDE
+# from utils.penchar_preprocessor import preprocess, SQUARE_PICTURE_SIDE TODO
 
 PI = math.pi
 M = 20  # number of points in the path

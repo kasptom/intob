@@ -116,12 +116,19 @@ def scale_sample(scale, sample):
     return scaled_sample
 
 
-def crop_sample(x_range, y_range, sample):
-    cropped_sample = []
+def crop_sample(x_range, y_range, strokes):
+    """
+    Crops the sample to the minimal size square.
+    Translates the points so that the extreme points touch the edges of the square
+    :param x_range:
+    :param y_range:
+    :param strokes:
+    :return: cropped sample
+    """
     x_side = x_range[1] - x_range[0]
     y_side = y_range[1] - y_range[0]
 
-    tvec = [0, 0]
+    tvec = np.array([0, 0])
     if x_side < y_side:
         tvec[0] = x_range[0] - (y_side - x_side) / 2
         tvec[1] = y_range[0]
@@ -129,8 +136,4 @@ def crop_sample(x_range, y_range, sample):
         tvec[0] = x_range[0]
         tvec[1] = y_range[0] - (x_side - y_side) / 2
 
-    for i in range(len(sample)):
-        stroke = sample[i]
-        stroke = [(point[0] - tvec[0], point[1] - tvec[1]) for point in stroke]
-        cropped_sample.append(stroke)
-    return cropped_sample
+    return [stroke - tvec for stroke in strokes]

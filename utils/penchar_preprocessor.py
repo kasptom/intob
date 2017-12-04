@@ -45,8 +45,9 @@ def compute_y_range(sample):
 
 def compute_coordinate_range(strokes, coordinate_index):
     merged_strokes = np.concatenate(tuple(strokes))
-    coord_min = np.amin(merged_strokes, axis=coordinate_index)
-    coord_max = np.amax(merged_strokes, axis=coordinate_index)
+    chosen_coordinate_column = merged_strokes[:, coordinate_index]
+    coord_min = np.amin(chosen_coordinate_column)
+    coord_max = np.amax(chosen_coordinate_column)
     return coord_min, coord_max
 
 

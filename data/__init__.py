@@ -28,19 +28,6 @@ def raw_chars(mapping=None):
     return [RawChar(**d) for d in char_dicts(mapping)]
 
 
-def preprocessed_chars(mapping=None):
-    try:
-        preprocessed_dictchars = np.load(_UJI_PREP_NPY)
-    except FileNotFoundError:
-        print("Preprocessing raw characters...")
-        preprocessed_dictchars = [preprocess(raw_sample) for raw_sample in raw_chars(mapping)]
-    return preprocessed_dictchars
-
-
-def vectorized_chars(mapping=None):
-    return [PenChar.to_vector(penchar) for penchar in preprocessed_chars(mapping)]
-
-
 def _stroke_length(stroke):
     diff = stroke[1:] - stroke[:-1]
     return np.linalg.norm(diff, axis=1).sum()

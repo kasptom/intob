@@ -2,15 +2,26 @@ from typing import List
 
 import numpy as np
 
+import data
+
 SQUARE_PICTURE_SIDE = 600
+
+
+def preprocessed_chars(raw_chars):
+    preprocessed_dictchars = [preprocess(raw_sample) for raw_sample in raw_chars]
+    return preprocessed_dictchars
+
+
+# def vectorized_chars(mapping=None):
+#     return [PenChar.to_vector(penchar) for penchar in preprocessed_chars(mapping)]
 
 
 def preprocess(raw_char):
     centre_of_mass = _centre_of_mass(raw_char.strokes)
-    slant = calculate_glyph_slant(raw_char.strokes)
-    rotated_strokes = rotate_strokes(raw_char.strokes, centre_of_mass, -slant)
-    x_range = compute_x_range(rotated_strokes)
-    y_range = compute_y_range(rotated_strokes)
+    slant = _calculate_glyph_slant(raw_char.strokes)
+    rotated_strokes = _rotate_strokes(raw_char.strokes, centre_of_mass, slant)
+    x_range = _compute_x_range(rotated_strokes)
+    y_range = _compute_y_range(rotated_strokes)
 
     cropped_sample = crop_sample(x_range, y_range, rotated_strokes)
 
@@ -18,7 +29,7 @@ def preprocess(raw_char):
     scale = SQUARE_PICTURE_SIDE / side_size
 
     scaled_sample = scale_sample(scale, cropped_sample)
-    return scaled_sample
+    return data.RawChar(raw_char.character_id, raw_char.sample_id, scaled_sample)
 
 
 def _centre_of_mass(strokes):
@@ -31,11 +42,11 @@ def _centre_of_mass(strokes):
     return sum_x / points_number, sum_y / points_number
 
 
-def compute_x_range(strokes):
+def _compute_x_range(strokes):
     return compute_coordinate_range(strokes=strokes, coordinate_index=0)
 
 
-def compute_y_range(sample):
+def _compute_y_range(sample):
     return compute_coordinate_range(strokes=sample, coordinate_index=1)
 
 
@@ -47,7 +58,7 @@ def compute_coordinate_range(strokes, coordinate_index):
     return coord_min, coord_max
 
 
-def calculate_glyph_slant(sample):
+def _calculate_glyph_slant(sample):
     """
     Calculates the slant of a glyph. Only vectors with the absolute value of th angle between them and the vertical
     axis less or equal to 50 degrees are considered. Vectors are created from each consecutive points for each
@@ -67,7 +78,7 @@ def calculate_glyph_slant(sample):
             x, y = xy_from_points(point_a, point_b)
             y = abs(y)
             rads = np.math.atan2(x, y)
-            if abs(rads) <= 50.0:
+            if abs(rads) <= (50.0 * (np.math.pi / 180.0)):
                 slant += rads
                 vectors_count += 1
     slant = slant / vectors_count
@@ -80,16 +91,7 @@ def xy_from_points(a, b):
     return xs, ys
 
 
-def _rotate(point, origin, angle):
-    ox, oy = origin
-    px, py = point
-
-    qx = ox + np.math.cos(angle) * (px - ox) - np.math.sin(angle) * (py - oy)
-    qy = oy + np.math.sin(angle) * (px - ox) + np.math.cos(angle) * (py - oy)
-    return qx, qy
-
-
-def rotate_strokes(strokes: List[np.ndarray], centre_of_mass, angle_rads):
+def _rotate_strokes(strokes: List[np.ndarray], centre_of_mass, angle_rads):
     """
     Rotate the points around origin by the angle (counter-clockwise)
     :param strokes:

@@ -69,8 +69,6 @@ def increase_vectors_number(segment_id, point_a, point_b, segments_directions):
     segments_directions[segment_id[0]][segment_id[1]][direction_to_increase] += 1
 
 
-
-
 def _xy_from_points(a, b):
     xs = b[0] - a[0]
     ys = b[1] - a[1]

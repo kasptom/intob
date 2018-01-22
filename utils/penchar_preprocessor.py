@@ -26,7 +26,11 @@ def preprocess(raw_char):
     cropped_sample = crop_sample(x_range, y_range, rotated_strokes)
 
     side_size = max(x_range[1] - x_range[0], y_range[1] - y_range[0])
-    scale = SQUARE_PICTURE_SIDE / side_size
+
+    if side_size != 0:
+        scale = SQUARE_PICTURE_SIDE / side_size
+    else:
+        scale = 1
 
     scaled_sample = scale_sample(scale, cropped_sample)
     return data.RawChar(raw_char.character_id, raw_char.sample_id, scaled_sample)
@@ -81,7 +85,8 @@ def _calculate_glyph_slant(sample):
             if abs(rads) <= (50.0 * (np.math.pi / 180.0)):
                 slant += rads
                 vectors_count += 1
-    slant = slant / vectors_count
+    if vectors_count != 0:
+        slant = slant / vectors_count
     return slant
 
 

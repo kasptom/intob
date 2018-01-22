@@ -33,14 +33,18 @@ class TestPreprocessor(TestCase):
         np.testing.assert_allclose(expected_2, result_2, atol=1e-16)
 
     def test_slant_correction(self):
-        # character_id = 'a'
+        character_id = 'a'
         character_id = 'h'
+
         glyph = test_glyphs[character_id]
         raw_char = RawChar(character_id, "test_sample_123", [np.array(stroke) for stroke in glyph['strokes']])
+        rotation_sequence = [raw_char]
 
-        centre_of_mass = _centre_of_mass(raw_char.strokes)
-        slant = _calculate_glyph_slant(raw_char.strokes)
-        rotated_strokes = _rotate_strokes(raw_char.strokes, centre_of_mass, slant)
+        for i in range(9):
+            centre_of_mass = _centre_of_mass(raw_char.strokes)
+            slant = _calculate_glyph_slant(raw_char.strokes)
+            rotated_strokes = _rotate_strokes(raw_char.strokes, centre_of_mass, slant)
+            rotated_char = RawChar(character_id, "rotated_sample_123", [np.array(stroke) for stroke in rotated_strokes])
+            rotation_sequence.append(rotated_char)
 
-        rotated_char = RawChar(character_id, "rotated_sample_123", [np.array(stroke) for stroke in rotated_strokes])
-        draw_chars([raw_char, rotated_char], 2)
+        draw_chars(rotation_sequence, 10)

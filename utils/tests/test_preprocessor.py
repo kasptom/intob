@@ -1,4 +1,6 @@
+import os
 import random
+import unittest
 from math import pi
 from unittest import TestCase
 
@@ -64,6 +66,7 @@ class TestPreprocessor(TestCase):
         np.testing.assert_array_equal(rotation_sequence[1].strokes[0], rotation_sequence[-1].strokes[0])
         np.testing.assert_array_equal(rotation_sequence[1].strokes[1], rotation_sequence[-1].strokes[1])
 
+    @unittest.skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true", "skipping glyphs' plotting")
     def test_preprocess_sample(self):
         penchars = raw_chars(mapping)
         sample = random.sample(penchars, 50)

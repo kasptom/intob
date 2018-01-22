@@ -1,8 +1,12 @@
+import random
 from unittest import TestCase
 
-from model.PenChar import PenChar
-from model.tests.test_glyphs import test_glyphs
-from utils.sample_preprocessor import SamplePreprocessor
+import matplotlib.pyplot as plt
+
+from data import raw_chars
+from utils.mappings.penchars_mapping_2 import mapping
+from utils.penchar_preprocessor import preprocessed_chars
+from utils.plotting import draw_chars
 
 
 class TestSamplePreprocessor(TestCase):
@@ -13,58 +17,28 @@ class TestSamplePreprocessor(TestCase):
     ]
 
     def test_compute_range(self):
-        stroke_points = TestSamplePreprocessor.stroke_points
-        flatten_strokes = SamplePreprocessor.flatten_sample(stroke_points)
-        expected_x_min = -10
-        expected_x_max = 100
-        expected_y_min = 0
-        expected_y_max = 200
-
-        x_min, x_max = SamplePreprocessor.compute_x_range(flatten_sample=flatten_strokes)
-        y_min, y_max = SamplePreprocessor.compute_y_range(sample=flatten_strokes)
-        self.assertEqual(expected_x_min, x_min)
-        self.assertEqual(expected_x_max, x_max)
-        self.assertEqual(expected_y_min, y_min)
-        self.assertEqual(expected_y_max, y_max)
+        pass
 
     def test_compute_centre_of_mass(self):
-        stroke_points = TestSamplePreprocessor.stroke_points
-        flatten_strokes = SamplePreprocessor.flatten_sample(stroke_points)
-        expected_center_of_mass = (10.0, 25.0)
-        centre_of_mass = SamplePreprocessor.center_of_mass(flatten_sample=flatten_strokes)
-        self.assertEqual(expected_center_of_mass, centre_of_mass)
+        pass
 
     def test_calculate_glyph_slant(self):
-        character_id = 'h'
-        glyph = test_glyphs[character_id]
-        slant = SamplePreprocessor.calculate_glyph_slant(glyph['strokes'])
-        print(slant)
-        penchar = PenChar(character_id, glyph['strokes_number'], glyph['strokes'], 'tst_a')
-        penchar.draw_path()
-        penchar.draw_normalized_path()
+        pass
 
     def test_rotate_sample(self):
-        character_id = 'h'
-        glyph = test_glyphs[character_id]
-        penchar = PenChar(character_id, glyph['strokes_number'], glyph['strokes'], 'tst_h')
-        penchar.draw_path()
-        penchar.draw_normalized_path()
-
-        flatten_sample = SamplePreprocessor.flatten_sample(glyph['strokes'])
-        center_of_mass = SamplePreprocessor.center_of_mass(flatten_sample)
-        slant = SamplePreprocessor.calculate_glyph_slant(glyph['strokes'])
-        rotated_stroke_points = SamplePreprocessor.rotate_sample(glyph['strokes'], center_of_mass, slant)
-
-        rotated_penchar = PenChar('h_rotated', 2, rotated_stroke_points, 'tst_h_rtd')
-        rotated_penchar.draw_path()
+        pass
 
     def test_preprocess_sample(self):
-        character_id = 'h'
-        glyph = test_glyphs[character_id]
-        penchar = PenChar(character_id, glyph['strokes_number'], glyph['strokes'], 'tst_h')
-        penchar.draw_path()
+        penchars = raw_chars(mapping)
+        sample = random.sample(penchars, 50)
 
-        preprocessed_stroke_points = SamplePreprocessor.preprocess_sample(glyph['strokes'])
-        preprocessed_penchar = PenChar('h_p', glyph['strokes_number'], preprocessed_stroke_points, 'tst_h_p')
-        preprocessed_penchar.draw_path()
-        preprocessed_penchar.draw_normalized_path()
+        preprocessed = preprocessed_chars(sample)
+
+        plt.figure(figsize=(14, 10))
+
+        zipped = []
+        for i in range(len(sample)):
+            zipped.append(sample[i])
+            zipped.append(preprocessed[i])
+
+        draw_chars(zipped)

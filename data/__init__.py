@@ -3,9 +3,6 @@ from collections import namedtuple
 
 import numpy as np
 
-from model import PenChar
-from utils.penchar_preprocessor import preprocess
-
 _DIR = os.path.dirname(__file__)
 _UJI_NPY = os.path.join(_DIR, "ujipenchars2.npy")
 _UJI_PREP_NPY = os.path.join(_DIR, "ujipenchars_prep.npy")

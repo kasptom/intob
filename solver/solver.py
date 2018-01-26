@@ -1,17 +1,17 @@
+from typing import List
+
 import tensorflow as tf
 
-from model.PenChar import PenChar
-from utils.penchars_reader import UjiPencharsReader
-from utils.penchars_mapping import CLASSES_NUMBER, SAMPLES_PER_WRITER
-from model.PenChar import W
-from model.PenChar import H
+from data import raw_chars, RawChar
+from model.raw_chars_to_vector import W, H, to_vectors
+from utils.mappings.penchars_mapping import CLASSES_NUMBER, SAMPLES_PER_WRITER, mapping
 
 X_SIZE = W * H * 8
 
 
 class Solver:
-    def __init__(self, penchars):
-        self.penchars = penchars
+    def __init__(self, raw_chars_data: List[RawChar]):
+        self.char_vectors = to_vectors(raw_chars_data)
         self.x = tf.placeholder(tf.float32, shape=[None, X_SIZE])
         self.y_ = tf.placeholder(tf.float32, shape=[None, CLASSES_NUMBER])
         self.W = tf.Variable(tf.zeros([X_SIZE, CLASSES_NUMBER]))
@@ -26,15 +26,13 @@ class Solver:
         sess = tf.InteractiveSession()
         tf.global_variables_initializer().run()
 
-        penchar_vectors = PenChar.to_vectors(self.penchars)
-
         for i in range(50):  # 50 out of 60 writers
-            train_vecs = penchar_vectors[i * SAMPLES_PER_WRITER:(i + 1) * SAMPLES_PER_WRITER]
+            train_vecs = self.char_vectors[i * SAMPLES_PER_WRITER:(i + 1) * SAMPLES_PER_WRITER]
             batch_xs = [penchar_data[0] for penchar_data in train_vecs]
             batch_ys = [penchar_data[1] for penchar_data in train_vecs]
             sess.run(self.train_step, feed_dict={self.x: batch_xs, self.y_: batch_ys})
 
-        test_vecs = penchar_vectors[50 * SAMPLES_PER_WRITER:60 * SAMPLES_PER_WRITER]
+        test_vecs = self.char_vectors[50 * SAMPLES_PER_WRITER:60 * SAMPLES_PER_WRITER]
         # cs_vecs = penchar_vectors[1000:1164]
         # test trained model
         test_x = [penchar_data[0] for penchar_data in test_vecs]
@@ -46,7 +44,6 @@ class Solver:
 
 
 if __name__ == '__main__':
-    parser = UjiPencharsReader(debug=False)
-    penchars = parser.parse("../data/ujipenchars2.txt")
-    solver = Solver(penchars)
+    raw_chars = raw_chars(mapping)
+    solver = Solver(raw_chars)
     solver.train()

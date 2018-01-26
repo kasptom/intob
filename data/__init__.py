@@ -1,10 +1,12 @@
+import os
 from collections import namedtuple
 
-import os
 import numpy as np
 
 _DIR = os.path.dirname(__file__)
 _UJI_NPY = os.path.join(_DIR, "ujipenchars2.npy")
+_UJI_PREP_NPY = os.path.join(_DIR, "ujipenchars_prep.npy")
+_UJI_VEC_NPY = os.path.join(_DIR, "ujipenchars_vec.npy")
 _UJI_TXT = os.path.join(_DIR, "ujipenchars2.txt")
 
 
@@ -32,4 +34,3 @@ class RawChar(namedtuple('RawChar', 'character_id sample_id strokes')):
     @property
     def stroke_lengths(self):
         return np.array([_stroke_length(s) for s in self.strokes])
-

@@ -9,7 +9,7 @@ import numpy as np
 
 from data import RawChar, raw_chars
 from model.Direction import Direction
-from utils.mappings.penchars_mapping_1 import mapping
+from utils.mappings.penchars_mapping_2 import mapping
 from utils.penchar_preprocessor import _rotate_strokes, _centre_of_mass, _calculate_glyph_slant, preprocessed_chars, \
     xy_from_points
 from utils.plotting import draw_chars

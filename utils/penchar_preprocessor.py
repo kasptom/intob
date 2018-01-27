@@ -1,4 +1,3 @@
-from itertools import groupby
 from typing import List
 
 import numpy as np
@@ -9,16 +8,18 @@ import data
 SQUARE_PICTURE_SIDE = 600
 M = 35
 
+sections_number_distribution = {}
+
 
 def preprocessed_chars(raw_chars):
-    preprocessed_dictchars = [preprocess(raw_sample) for raw_sample in raw_chars]
-    return preprocessed_dictchars
+    return [preprocess(raw_sample) for raw_sample in raw_chars]
 
 
 # def vectorized_chars(mapping=None):
 #     return [PenChar.to_vector(penchar) for penchar in preprocessed_chars(mapping)]
 def preprocess(raw_char):
     normalized_strokes = _normalize_path(raw_char, M)
+    # normalized_strokes = raw_char.strokes
 
     centre_of_mass = _centre_of_mass(normalized_strokes)
     slant = _calculate_glyph_slant(normalized_strokes)
@@ -42,20 +43,12 @@ def preprocess(raw_char):
 def _normalize_path(raw_char: data.RawChar, path_points_number: int):
     raw_strokes = raw_char.strokes
     normalized_strokes = []
-    # remove adjacent duplicates
-    strokes = []
-    for raw_stroke in raw_strokes:
-        stroke = [raw_stroke[0]]
-
-        for raw_point in raw_stroke[1:]:
-            if _dist(stroke[-1], raw_point) != 0:
-                stroke.append(raw_point)
-        strokes.append(np.array(stroke))
+    strokes = _remove_adjacent_duplicates(raw_strokes)
 
     section_len = _compute_strokes_length(strokes) / (path_points_number - 1)
 
-    normalized_stroke = []
     for stroke in strokes:
+        normalized_stroke = []
         prev_point = stroke[0]
         normalized_stroke.append(prev_point)
         curr_dist = 0
@@ -77,23 +70,38 @@ def _normalize_path(raw_char: data.RawChar, path_points_number: int):
                 new_point = _generate_point(prev_point, point, section_len - curr_dist)
                 normalized_stroke.append(new_point)
                 prev_point = new_point
-                for j in range(k-1):
+                for j in range(k - 1):
                     new_point = _generate_point(prev_point, point, section_len)
                     normalized_stroke.append(new_point)
                     prev_point = new_point
                 curr_dist = 0
 
-                if i == len(stroke) - 1:
-                    i += 1
+        if curr_dist >= section_len / 2:
+            new_point = _generate_point(normalized_stroke[-1], stroke[-1], section_len - curr_dist)
+            normalized_stroke.append(new_point)
 
         normalized_strokes.append(np.array(normalized_stroke))
-    points_number = 0
+    sections = 0
     for stroke in normalized_strokes:
-        points_number += len(stroke)
-    if points_number != M:
-        print(raw_char.character_id)
-        print(points_number)
+        sections += len(stroke) - 1
+
+    if sections not in sections_number_distribution:
+        sections_number_distribution[sections] = 1
+    else:
+        sections_number_distribution[sections] += 1
     return normalized_strokes
+
+
+def _remove_adjacent_duplicates(raw_strokes):
+    strokes = []
+    for raw_stroke in raw_strokes:
+        stroke = [raw_stroke[0]]
+
+        for raw_point in raw_stroke[1:]:
+            if _dist(stroke[-1], raw_point) != 0:
+                stroke.append(raw_point)
+        strokes.append(np.array(stroke))
+    return strokes
 
 
 def _compute_strokes_length(strokes):
@@ -220,3 +228,7 @@ def crop_sample(x_range, y_range, strokes):
         tvec[1] = y_range[0] - (x_side - y_side) / 2
 
     return [stroke - tvec for stroke in strokes]
+
+
+def get_sections_number_distribution():
+    return sections_number_distribution

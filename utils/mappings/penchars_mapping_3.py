@@ -1,5 +1,5 @@
 CLASSES_NUMBER = 10
-SAMPLES_PER_WRITER = (10) * 2
+SAMPLES_PER_WRITER = 10 * 2
 
 mapping = {
     "0": 0,

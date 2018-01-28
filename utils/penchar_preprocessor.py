@@ -11,18 +11,21 @@ M = 35
 sections_number_distribution = {}
 
 
-def preprocessed_chars(raw_chars):
-    return [preprocess(raw_sample) for raw_sample in raw_chars]
+def create_preprocessed_glyphs_dict(mapping=None):
+    glyphs_dict = data.raw_glyphs_dict(mapping)
+    return [{'character_id': glyph['character_id'],
+             'sample_id': glyph['sample_id'],
+             'strokes': preprocess(glyph)
+             } for glyph in glyphs_dict]
 
 
-# def vectorized_chars(mapping=None):
-#     return [PenChar.to_vector(penchar) for penchar in preprocessed_chars(mapping)]
-def preprocess(raw_char):
-    normalized_strokes = _normalize_path(raw_char, M)
+def preprocess(glyph):
+    normalized_strokes = _normalize_path(glyph, M)
     # normalized_strokes = raw_char.strokes
 
     centre_of_mass = _centre_of_mass(normalized_strokes)
-    slant = _calculate_glyph_slant(normalized_strokes)
+    # slant = _calculate_glyph_slant(normalized_strokes)
+    slant = 0.0
     rotated_strokes = _rotate_strokes(normalized_strokes, centre_of_mass, slant)
     x_range = _compute_x_range(rotated_strokes)
     y_range = _compute_y_range(rotated_strokes)
@@ -37,11 +40,30 @@ def preprocess(raw_char):
         scale = 1
 
     scaled_sample = scale_sample(scale, cropped_sample)
-    return data.RawChar(raw_char.character_id, raw_char.sample_id, scaled_sample)
+
+    sections_number = get_sections_number(scaled_sample)
+
+    padding_stroke = []
+    for _ in range(M - sections_number):
+        padding_stroke.append(scaled_sample[-1][-1])
+
+    scaled_sample.append(np.array(padding_stroke))
+
+    update_section_length_distribution(scaled_sample)
+
+    return scaled_sample
 
 
-def _normalize_path(raw_char: data.RawChar, path_points_number: int):
-    raw_strokes = raw_char.strokes
+def update_section_length_distribution(scaled_sample):
+    sections = get_sections_number(scaled_sample)
+    if sections not in sections_number_distribution:
+        sections_number_distribution[sections] = 1
+    else:
+        sections_number_distribution[sections] += 1
+
+
+def _normalize_path(glyph, path_points_number: int):
+    raw_strokes = glyph['strokes']
     normalized_strokes = []
     strokes = _remove_adjacent_duplicates(raw_strokes)
 
@@ -81,15 +103,14 @@ def _normalize_path(raw_char: data.RawChar, path_points_number: int):
             normalized_stroke.append(new_point)
 
         normalized_strokes.append(np.array(normalized_stroke))
+    return normalized_strokes
+
+
+def get_sections_number(normalized_strokes):
     sections = 0
     for stroke in normalized_strokes:
         sections += len(stroke) - 1
-
-    if sections not in sections_number_distribution:
-        sections_number_distribution[sections] = 1
-    else:
-        sections_number_distribution[sections] += 1
-    return normalized_strokes
+    return sections
 
 
 def _remove_adjacent_duplicates(raw_strokes):

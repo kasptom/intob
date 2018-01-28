@@ -3,6 +3,8 @@ from collections import namedtuple
 
 import numpy as np
 
+from utils.penchar_preprocessor import create_preprocessed_glyphs_dict
+
 _DIR = os.path.dirname(__file__)
 _UJI_NPY = os.path.join(_DIR, "ujipenchars2.npy")
 _UJI_PREP_NPY = os.path.join(_DIR, "ujipenchars_prep.npy")
@@ -10,7 +12,7 @@ _UJI_VEC_NPY = os.path.join(_DIR, "ujipenchars_vec.npy")
 _UJI_TXT = os.path.join(_DIR, "ujipenchars2.txt")
 
 
-def char_dicts(mapping=None):
+def raw_glyphs_dict(mapping=None):
     try:
         dictchars = np.load(_UJI_NPY)
     except FileNotFoundError:
@@ -21,8 +23,22 @@ def char_dicts(mapping=None):
     return filter(lambda c: c['character_id'] in mapping, dictchars)
 
 
-def raw_chars(mapping=None):
-    return [RawChar(**d) for d in char_dicts(mapping)]
+def raw_glyphs(mapping=None):
+    return [Glyph(**d) for d in raw_glyphs_dict(mapping)]
+
+
+def preprocessed_glyphs(mapping=None):
+    return [Glyph(**d) for d in preprocessed_glyphs_dict(mapping)]
+
+
+def preprocessed_glyphs_dict(mapping=None):
+    try:
+        prep_glyphs_dict = np.load(_UJI_PREP_NPY)
+    except FileNotFoundError:
+        print("Preprocessing glyphs...")
+        prep_glyphs_dict = create_preprocessed_glyphs_dict(mapping)
+        np.save(_UJI_PREP_NPY, prep_glyphs_dict)
+    return prep_glyphs_dict
 
 
 def _stroke_length(stroke):
@@ -30,7 +46,7 @@ def _stroke_length(stroke):
     return np.linalg.norm(diff, axis=1).sum()
 
 
-class RawChar(namedtuple('RawChar', 'character_id sample_id strokes')):
+class Glyph(namedtuple('RawChar', 'character_id sample_id strokes')):
     @property
     def stroke_lengths(self):
         return np.array([_stroke_length(s) for s in self.strokes])

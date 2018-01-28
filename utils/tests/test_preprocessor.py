@@ -7,11 +7,10 @@ from unittest import TestCase
 import matplotlib.pyplot as plt
 import numpy as np
 
-from data import RawChar, raw_chars
+from data import Glyph, raw_glyphs_dict, preprocessed_glyphs_dict
 from model.Direction import Direction
 from utils.mappings.penchars_mapping_2 import mapping
-from utils.penchar_preprocessor import _rotate_strokes, _centre_of_mass, _calculate_glyph_slant, preprocessed_chars, \
-    xy_from_points
+from utils.penchar_preprocessor import _centre_of_mass, xy_from_points, _rotate_strokes, _calculate_glyph_slant
 from utils.plotting import draw_chars
 from utils.tests.data_test_glyphs import test_glyphs
 
@@ -52,14 +51,14 @@ class TestPreprocessor(TestCase):
         character_id = 'h'
 
         glyph = test_glyphs[character_id]
-        raw_char = RawChar(character_id, "test_sample_123", [np.array(stroke) for stroke in glyph['strokes']])
+        raw_char = Glyph(character_id, "test_sample_123", [np.array(stroke) for stroke in glyph['strokes']])
         rotation_sequence = [raw_char]
 
         for i in range(9):
             centre_of_mass = _centre_of_mass(raw_char.strokes)
             slant = _calculate_glyph_slant(raw_char.strokes)
             rotated_strokes = _rotate_strokes(raw_char.strokes, centre_of_mass, slant)
-            rotated_char = RawChar(character_id, "rotated_sample_123", [np.array(stroke) for stroke in rotated_strokes])
+            rotated_char = Glyph(character_id, "rotated_sample_123", [np.array(stroke) for stroke in rotated_strokes])
             rotation_sequence.append(rotated_char)
 
         # draw_chars(rotation_sequence, 10)
@@ -68,17 +67,20 @@ class TestPreprocessor(TestCase):
 
     @unittest.skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true", "skipping glyphs' plotting")
     def test_preprocess_sample(self):
-        penchars = raw_chars(mapping)
-        sample = random.sample(penchars, 50)
+        raw_dict, prep_dict = np.array(list(raw_glyphs_dict(mapping))), preprocessed_glyphs_dict(mapping)
 
-        preprocessed = preprocessed_chars(sample)
+        zipped_dicts = list(zip(raw_dict, prep_dict))
+        zipped_dicts = random.sample(list(zipped_dicts), 50)
+
+        raw_sample = [Glyph(**pair[0]) for pair in zipped_dicts]
+        prep_sample = [Glyph(**pair[1]) for pair in zipped_dicts]
 
         plt.figure(figsize=(14, 10))
 
         zipped = []
-        for i in range(len(sample)):
-            zipped.append(sample[i])
-            zipped.append(preprocessed[i])
+        for i in range(len(raw_sample)):
+            zipped.append(raw_sample[i])
+            zipped.append(prep_sample[i])
         draw_chars(zipped)
 
     def test_get_direction(self):

@@ -2,7 +2,7 @@ from typing import List
 
 import tensorflow as tf
 
-from data import raw_chars, RawChar
+from data import raw_glyphs, Glyph, preprocessed_glyphs
 from model.raw_chars_to_vector import W, H, to_vectors
 from utils.mappings.penchars_mapping import CLASSES_NUMBER, SAMPLES_PER_WRITER, mapping
 from utils.penchar_preprocessor import get_sections_number_distribution
@@ -11,7 +11,7 @@ X_SIZE = W * H * 8
 
 
 class Solver:
-    def __init__(self, raw_chars_data: List[RawChar]):
+    def __init__(self, raw_chars_data: List[Glyph]):
         self.char_vectors = to_vectors(raw_chars_data)
         self.x = tf.placeholder(tf.float32, shape=[None, X_SIZE])
         self.y_ = tf.placeholder(tf.float32, shape=[None, CLASSES_NUMBER])
@@ -45,7 +45,10 @@ class Solver:
 
 
 if __name__ == '__main__':
-    raw_chars = raw_chars(mapping)
-    solver = Solver(raw_chars)
+    raw_chars = raw_glyphs(mapping)
+
+    glyphs = preprocessed_glyphs(mapping)
+
+    solver = Solver(glyphs)
     print(get_sections_number_distribution())
     solver.train()

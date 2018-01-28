@@ -3,7 +3,7 @@ from typing import List
 
 import numpy as np
 
-from data import RawChar
+from data import Glyph
 from model.Direction import Direction
 from utils.mappings.penchars_mapping import CLASSES_NUMBER
 from utils.mappings.penchars_mapping import mapping
@@ -16,7 +16,7 @@ MAX_STROKES = 6
 DISPLAY_IF_WARN = False
 
 
-def to_vectors(raw_chars: List[RawChar]):
+def to_vectors(raw_chars: List[Glyph]):
     """
     Converts each entity from entities to the list of x and y vectors
     :param raw_chars:
@@ -25,14 +25,13 @@ def to_vectors(raw_chars: List[RawChar]):
     return [to_vector(raw_char) for raw_char in raw_chars]
 
 
-def to_vector(raw_char: RawChar):
-    raw_char = preprocess(raw_char)
-    directions = compute_directions(raw_char)
+def to_vector(preprocessed_char: Glyph):
+    directions = compute_directions(preprocessed_char)
     x_vector = np.array(directions)
     # 9 segments 8 directions => 72 values
     x_vector = x_vector.flatten()
     y_vector = [0] * CLASSES_NUMBER
-    y_vector[mapping.get(raw_char.character_id)] = 1
+    y_vector[mapping.get(preprocessed_char.character_id)] = 1
     return x_vector, y_vector
 
 
@@ -49,7 +48,7 @@ def _distance(point_a, point_b):
     return math.sqrt(math.pow(point_a[0] - point_b[0], 2) + math.pow(point_a[1] - point_b[1], 2))
 
 
-def compute_directions(raw_char: RawChar):
+def compute_directions(raw_char: Glyph):
     segments_directions = [[[0 for _ in range(8)] for _ in range(W)] for _ in range(H)]
     strokes_number = len(raw_char.strokes)
     for i in range(strokes_number):
@@ -75,7 +74,7 @@ def _xy_from_points(a, b):
     return xs, ys
 
 
-def create_normalized_path(raw_char: RawChar):
+def create_normalized_path(raw_char: Glyph):
     strokes_number = len(raw_char.strokes)
     normalized_path = [[] for _ in range(strokes_number)]
     section_length = _compute_section_length(strokes_number, raw_char.strokes)

@@ -1,10 +1,10 @@
 from typing import List
-from data import RawChar
+from data import Glyph
 
 import matplotlib.pyplot as plt
 
 
-def draw_chars(chars: List[RawChar], cols=10):
+def draw_chars(chars: List[Glyph], cols=10):
     rows = -(-len(chars)//cols)  # rounding up
     r = range(cols * rows)
     for i, s in zip(r, chars):

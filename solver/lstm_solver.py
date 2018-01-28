@@ -7,7 +7,7 @@ from utils.mappings.penchars_mapping_2 import SAMPLES_PER_WRITER, CLASSES_NUMBER
 
 batch_size = SAMPLES_PER_WRITER
 
-TIME_STEPS = M - 1
+TIME_STEPS = M
 POINT_DIM = 2
 DROPOUT = 0.2
 RECURRENT_DROPOUT = 0.2

@@ -6,7 +6,7 @@ from numpy import linalg as la
 import data
 
 SQUARE_PICTURE_SIDE = 600
-M = 40
+M = 40  # sections number
 
 sections_number_distribution = {}
 
@@ -45,6 +45,7 @@ def preprocess(glyph):
 
     padding_stroke = []
     for _ in range(M - sections_number):
+        padding_stroke.append(scaled_sample[-1][-2])
         padding_stroke.append(scaled_sample[-1][-1])
 
     if len(padding_stroke) > 0:
@@ -63,13 +64,14 @@ def update_section_length_distribution(scaled_sample):
         sections_number_distribution[sections] += 1
 
 
-def _normalize_path(glyph, path_points_number: int):
+def _normalize_path(glyph, sections_number: int):
     raw_strokes = glyph['strokes']
     normalized_strokes = []
     strokes = _remove_adjacent_duplicates(raw_strokes)
 
-    section_len = _compute_strokes_length(strokes) / (path_points_number - 1)
+    section_len = _compute_strokes_length(strokes) / sections_number
 
+    sections_counter = 0
     for stroke in strokes:
         normalized_stroke = []
         prev_point = stroke[0]
@@ -77,7 +79,7 @@ def _normalize_path(glyph, path_points_number: int):
         curr_dist = 0
 
         i = 0
-        while i < len(stroke):
+        while i < len(stroke) and sections_counter < M:
             point = stroke[i]
             if curr_dist + _dist(prev_point, point) <= section_len:
                 curr_dist += _dist(prev_point, point)
@@ -91,25 +93,28 @@ def _normalize_path(glyph, path_points_number: int):
                     k -= 1
 
                 new_point = _generate_point(prev_point, point, section_len - curr_dist)
+                sections_counter += 1
                 normalized_stroke.append(new_point)
                 prev_point = new_point
                 for j in range(k - 1):
                     new_point = _generate_point(prev_point, point, section_len)
                     normalized_stroke.append(new_point)
+                    sections_counter += 1
                     prev_point = new_point
                 curr_dist = 0
 
         if curr_dist >= section_len / 2:
             new_point = _generate_point(normalized_stroke[-1], stroke[-1], section_len - curr_dist)
+            sections_counter += 1
             normalized_stroke.append(new_point)
 
         normalized_strokes.append(np.array(normalized_stroke))
     return normalized_strokes
 
 
-def get_sections_number(normalized_strokes):
+def get_sections_number(strokes):
     sections = 0
-    for stroke in normalized_strokes:
+    for stroke in strokes:
         sections += len(stroke) - 1
     return sections
 

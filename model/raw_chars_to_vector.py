@@ -7,7 +7,7 @@ from data import Glyph
 from model.Direction import Direction
 from utils.mappings.penchars_mapping import CLASSES_NUMBER
 from utils.mappings.penchars_mapping import mapping
-from utils.penchar_preprocessor import SQUARE_PICTURE_SIDE, preprocess, M
+from utils.penchar_preprocessor import SQUARE_PICTURE_SIDE, M
 
 PI = math.pi
 W, H = 4, 4  # resolution of the rectangle with a character

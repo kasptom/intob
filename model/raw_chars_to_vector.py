@@ -31,7 +31,9 @@ def to_vectors_72(raw_chars: List[Glyph]):
 def to_vector_m(glyph: Glyph):
     x_vector = []
     try:
-        x_vector = np.concatenate(tuple(glyph.strokes))
+        for stroke in glyph.strokes:
+            for i in range(len(stroke) - 1):
+                x_vector.append(np.concatenate((stroke[i], stroke[i + 1])))
     except ValueError:
         print(glyph.character_id, glyph.sample_id)
 

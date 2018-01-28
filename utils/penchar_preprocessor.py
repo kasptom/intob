@@ -6,7 +6,7 @@ from numpy import linalg as la
 import data
 
 SQUARE_PICTURE_SIDE = 600
-M = 35
+M = 40
 
 sections_number_distribution = {}
 
@@ -47,7 +47,8 @@ def preprocess(glyph):
     for _ in range(M - sections_number):
         padding_stroke.append(scaled_sample[-1][-1])
 
-    scaled_sample.append(np.array(padding_stroke))
+    if len(padding_stroke) > 0:
+        scaled_sample.append(np.array(padding_stroke))
 
     update_section_length_distribution(scaled_sample)
 

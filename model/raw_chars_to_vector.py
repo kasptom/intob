@@ -7,25 +7,44 @@ from data import Glyph
 from model.Direction import Direction
 from utils.mappings.penchars_mapping import CLASSES_NUMBER
 from utils.mappings.penchars_mapping import mapping
-from utils.penchar_preprocessor import SQUARE_PICTURE_SIDE, preprocess
+from utils.penchar_preprocessor import SQUARE_PICTURE_SIDE, preprocess, M
 
 PI = math.pi
-M = 20  # number of points in the path
 W, H = 4, 4  # resolution of the rectangle with a character
 MAX_STROKES = 6
 DISPLAY_IF_WARN = False
 
 
-def to_vectors(raw_chars: List[Glyph]):
+def to_vectors_and_labels(glyphs: List[Glyph]):
+    return [to_vector_m(glyph) for glyph in glyphs], [to_label(glyph) for glyph in glyphs]
+
+
+def to_vectors_72(raw_chars: List[Glyph]):
     """
     Converts each entity from entities to the list of x and y vectors
     :param raw_chars:
     :return: x (n x 72), y - (n x CLASSES_NUMBER) - where n is the length of the entities list
     """
-    return [to_vector(raw_char) for raw_char in raw_chars]
+    return [to_vector_72(raw_char) for raw_char in raw_chars]
 
 
-def to_vector(preprocessed_char: Glyph):
+def to_vector_m(glyph: Glyph):
+    x_vector = []
+    try:
+        x_vector = np.concatenate(tuple(glyph.strokes))
+    except ValueError:
+        print(glyph.character_id, glyph.sample_id)
+
+    return x_vector
+
+
+def to_label(glyph: Glyph):
+    y_vector = [0] * CLASSES_NUMBER
+    y_vector[mapping.get(glyph.character_id)] = 1
+    return y_vector
+
+
+def to_vector_72(preprocessed_char: Glyph):
     directions = compute_directions(preprocessed_char)
     x_vector = np.array(directions)
     # 9 segments 8 directions => 72 values

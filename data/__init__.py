@@ -7,7 +7,7 @@ from utils.penchar_preprocessor import create_preprocessed_glyphs_dict
 
 _DIR = os.path.dirname(__file__)
 _UJI_NPY = os.path.join(_DIR, "ujipenchars2.npy")
-_UJI_PREP_NPY = os.path.join(_DIR, "ujipenchars_prep.npy")
+_UJI_PREP_NPY = os.path.join(_DIR, "ujipenchars2_prep.npy")
 _UJI_VEC_NPY = os.path.join(_DIR, "ujipenchars_vec.npy")
 _UJI_TXT = os.path.join(_DIR, "ujipenchars2.txt")
 

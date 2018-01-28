@@ -3,7 +3,6 @@ import random
 import unittest
 from unittest import TestCase
 
-import keras
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -21,6 +20,7 @@ class TestLstmSolver(TestCase):
 
         prep_sample = random.sample(prep_sample, 50)
 
+        import keras
         lstm_model = keras.models.load_model("../lstm_glyphs.h5")
         inv_map = {v: k for k, v in mapping.items()}
         answers = []

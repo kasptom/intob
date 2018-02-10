@@ -3,7 +3,7 @@ import numpy as np
 
 def read_file(file_name: str):
     penchars = []
-    with open(file_name) as file:
+    with open(file_name, encoding='utf-8') as file:
         iter_file = iter(file)
         for line in iter_file:
             if line.lstrip().startswith("//"):

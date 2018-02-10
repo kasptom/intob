@@ -12,6 +12,7 @@ from utils.mappings.penchars_mapping_2 import mapping
 from utils.plotting import draw_chars
 
 
+@unittest.skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true", "skipping NNs evaluation")
 class TestSolvers(TestCase):
 
     @classmethod
@@ -20,7 +21,6 @@ class TestSolvers(TestCase):
         prep_sample = [Glyph(**g) for g in prep_dict]
         cls.prep_sample = random.sample(prep_sample, 50)
 
-    @unittest.skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true", "skipping nn evaluation")
     def test_lstm_solver(self):
         import keras
         lstm_model = keras.models.load_model("../lstm_glyphs.h5")
@@ -37,7 +37,6 @@ class TestSolvers(TestCase):
             zipped.append(self.prep_sample[i])
         draw_chars(zipped)
 
-    @unittest.skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true", "skipping nn evaluation")
     def test_softmax_solver(self):
         import keras
         softmax_model = keras.models.load_model("../softmax_glyphs.h5")

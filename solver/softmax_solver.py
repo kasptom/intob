@@ -37,6 +37,8 @@ class Solver:
 
         self.model.evaluate(test_x, test_y, 1)
 
+        self.model.save("softmax_glyphs.h5")
+
         score, acc = self.model.evaluate(test_x, test_y)
 
         print('Score: %f' % score)

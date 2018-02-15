@@ -11,7 +11,7 @@ from utils.penchar_preprocessor import get_sections_number_distribution
 
 X_SIZE = W * H * 8
 EPOCH_PATIENCE = 3
-EPOCHS_LIMIT = 40
+EPOCHS_LIMIT = 100
 
 class Solver:
     def __init__(self, glyphs_data: List[Glyph]):

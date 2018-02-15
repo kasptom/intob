@@ -4,5 +4,5 @@ from solver.softmax_solver import SoftmaxSolver
 from utils.mappings.penchars_mapping_2 import mapping
 
 glyphs = preprocessed_glyphs(mapping)
-solver = SoftmaxSolver(glyphs)
+solver = LstmSolver(glyphs)
 solver.train()

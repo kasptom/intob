@@ -34,5 +34,8 @@ class LstmSolver(Solver):
         print(model.summary())
         return model
 
+    def get_csv_log_file_name(self):
+        return "data/log_lstm.csv"
+
     def save_model(self):
         self.model.save("lstm_glyphs.h5")

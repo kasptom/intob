@@ -28,6 +28,9 @@ class SoftmaxSolver(Solver):
         model.compile(loss='mean_squared_error', optimizer=sgd, metrics=['accuracy'])
         return model
 
+    def get_csv_log_file_name(self):
+        return "data/log_softmax.csv"
+
     def save_model(self):
         self.model.save("softmax_glyphs.h5")
 

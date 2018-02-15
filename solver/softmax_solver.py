@@ -1,49 +1,38 @@
 from typing import List
 
 from keras import Sequential, optimizers
-from keras.layers import Dense, Activation, np
+from keras.layers import Dense, Activation
 
 from data import raw_glyphs, Glyph, preprocessed_glyphs
 from model.raw_chars_to_vector import W, H, to_vectors_whd
-from utils.mappings.penchars_mapping import CLASSES_NUMBER, SAMPLES_PER_WRITER, mapping
+from solver.base_solver import Solver
+from utils.mappings.penchars_mapping import CLASSES_NUMBER, mapping
 from utils.penchar_preprocessor import get_sections_number_distribution
 
 X_SIZE = W * H * 8
 
 
-class Solver:
+class SoftmaxSolver(Solver):
     def __init__(self, glyphs_data: List[Glyph]):
-        self.char_vectors = to_vectors_whd(glyphs_data)
+        super().__init__(glyphs_data)
 
-        self.model = Sequential()
-        self.model.add(Dense(CLASSES_NUMBER, kernel_initializer='uniform', input_shape=(X_SIZE,)))
-        self.model.add(Activation('tanh'))
-        self.model.add(Activation('softmax'))
+    def generate_vectors(self, glyphs_data: List[Glyph]):
+        return to_vectors_whd(glyphs_data)
 
+    def create_model(self):
+        model = Sequential()
+        model.add(Dense(CLASSES_NUMBER, kernel_initializer='uniform', input_shape=(X_SIZE,)))
+        model.add(Activation('tanh'))
+        model.add(Activation('softmax'))
         sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
-        self.model.compile(loss='mean_squared_error', optimizer=sgd, metrics=['accuracy'])
+        model.compile(loss='mean_squared_error', optimizer=sgd, metrics=['accuracy'])
+        return model
 
-    def train(self):
-        train_vecs = self.char_vectors[0 * SAMPLES_PER_WRITER:50 * SAMPLES_PER_WRITER]
-        test_vecs = self.char_vectors[50 * SAMPLES_PER_WRITER:60 * SAMPLES_PER_WRITER]
-
-        train_x = np.array([penchar_data[0] for penchar_data in train_vecs])
-        train_y = np.array([penchar_data[1] for penchar_data in train_vecs])
-
-        test_x = np.array([penchar_data[0] for penchar_data in test_vecs])
-        test_y = np.array([penchar_data[1] for penchar_data in test_vecs])
-
-        self.model.fit(train_x, train_y, batch_size=1, epochs=15)
-
-        self.model.evaluate(test_x, test_y, 1)
-
+    def save_model(self):
         self.model.save("softmax_glyphs.h5")
 
-        score, acc = self.model.evaluate(test_x, test_y)
-
-        print('Score: %f' % score)
-        print('Test accuracy: %f%%' % (acc * 100))
-        print('Score', score)
+    def set_batch_size(self):
+        return 1
 
 
 if __name__ == '__main__':

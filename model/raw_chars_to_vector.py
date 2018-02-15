@@ -25,7 +25,8 @@ def to_vectors_whd(glyphs: List[Glyph]):
     :param glyphs:
     :return: x (n x (width * height * directions)), y - (n x CLASSES_NUMBER) - where n is the length of the glyphs list
     """
-    return [to_vector_whd(raw_char) for raw_char in glyphs]
+    whd_vector_labels = [to_vector_whd(raw_char) for raw_char in glyphs]
+    return [vector[0] for vector in whd_vector_labels], [whd_vector_label[1] for whd_vector_label in whd_vector_labels]
 
 
 def to_vector_m(glyph: Glyph):

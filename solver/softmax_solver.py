@@ -4,7 +4,7 @@ from keras import Sequential, optimizers
 from keras.layers import Dense, Activation, np
 
 from data import raw_glyphs, Glyph, preprocessed_glyphs
-from model.raw_chars_to_vector import W, H, to_vectors_72
+from model.raw_chars_to_vector import W, H, to_vectors_whd
 from utils.mappings.penchars_mapping import CLASSES_NUMBER, SAMPLES_PER_WRITER, mapping
 from utils.penchar_preprocessor import get_sections_number_distribution
 
@@ -13,7 +13,7 @@ X_SIZE = W * H * 8
 
 class Solver:
     def __init__(self, glyphs_data: List[Glyph]):
-        self.char_vectors = to_vectors_72(glyphs_data)
+        self.char_vectors = to_vectors_whd(glyphs_data)
 
         self.model = Sequential()
         self.model.add(Dense(CLASSES_NUMBER, kernel_initializer='uniform', input_shape=(X_SIZE,)))

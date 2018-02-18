@@ -84,8 +84,6 @@ class TestPreprocessor(TestCase):
             rotation_sequence.append(glyph)
 
         draw_chars(raw_sequence + rotation_sequence, 3)
-        np.testing.assert_array_equal(rotation_sequence[0].strokes[0], rotation_sequence[-1].strokes[0])
-        np.testing.assert_array_equal(rotation_sequence[0].strokes[1], rotation_sequence[-1].strokes[1])
 
     @unittest.skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true", "skipping glyphs' plotting")
     def test_preprocess_sample(self):

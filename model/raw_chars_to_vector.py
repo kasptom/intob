@@ -19,13 +19,14 @@ def to_vectors_and_labels(glyphs: List[Glyph]):
     return [to_vector_m(glyph) for glyph in glyphs], [to_label(glyph) for glyph in glyphs]
 
 
-def to_vectors_72(raw_chars: List[Glyph]):
+def to_vectors_whd(glyphs: List[Glyph]):
     """
-    Converts each entity from entities to the list of x and y vectors
-    :param raw_chars:
-    :return: x (n x 72), y - (n x CLASSES_NUMBER) - where n is the length of the entities list
+    Converts each glyph from glyphs to the list of x and y vectors
+    :param glyphs:
+    :return: x (n x (width * height * directions)), y - (n x CLASSES_NUMBER) - where n is the length of the glyphs list
     """
-    return [to_vector_72(raw_char) for raw_char in raw_chars]
+    whd_vector_labels = [to_vector_whd(raw_char) for raw_char in glyphs]
+    return [vector[0] for vector in whd_vector_labels], [whd_vector_label[1] for whd_vector_label in whd_vector_labels]
 
 
 def to_vector_m(glyph: Glyph):
@@ -40,13 +41,28 @@ def to_vector_m(glyph: Glyph):
     return x_vector
 
 
+def to_vectors_udnc(glyph: Glyph):
+    """
+    See http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.187.6773&rep=rep1&type=pdf
+    :param glyph:
+    :return:
+    """
+    glyph_length = _compute_glyph_length(glyph.strokes, len(glyph.strokes))
+    # for stroke in glyph.strokes:
+    pass
+
+
+def to_vector_udnc(glyph: Glyph):
+    pass
+
+
 def to_label(glyph: Glyph):
     y_vector = [0] * CLASSES_NUMBER
     y_vector[mapping.get(glyph.character_id)] = 1
     return y_vector
 
 
-def to_vector_72(preprocessed_char: Glyph):
+def to_vector_whd(preprocessed_char: Glyph):
     directions = compute_directions(preprocessed_char)
     x_vector = np.array(directions)
     # 9 segments 8 directions => 72 values
@@ -57,12 +73,16 @@ def to_vector_72(preprocessed_char: Glyph):
 
 
 def _compute_section_length(strokes_number, strokes):
-    path_length = 0
+    path_length = _compute_glyph_length(strokes, strokes_number)
+    return path_length / (M - 1)
 
+
+def _compute_glyph_length(strokes, strokes_number):
+    path_length = 0
     for stroke_id in range(strokes_number):
         for idx in range(1, len(strokes[stroke_id])):
             path_length += _distance(strokes[stroke_id][idx - 1], strokes[stroke_id][idx])
-    return path_length / (M - 1)
+    return path_length
 
 
 def _distance(point_a, point_b):

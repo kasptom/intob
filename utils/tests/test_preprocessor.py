@@ -66,6 +66,26 @@ class TestPreprocessor(TestCase):
         np.testing.assert_array_equal(rotation_sequence[1].strokes[1], rotation_sequence[-1].strokes[1])
 
     @unittest.skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true", "skipping glyphs' plotting")
+    def test_compare_rotation(self):
+        character_ids = ['I', 'H', 'c']
+        rotation_sequence = []
+        raw_sequence = []
+
+        for character_id in character_ids:
+            glyph = test_glyphs[character_id]
+            raw_char = Glyph(character_id, "test_sample_123" + character_id, [np.array(stroke) for stroke in glyph['strokes']])
+
+            centre_of_mass = _centre_of_mass(raw_char.strokes)
+            slant = _calculate_glyph_slant(raw_char.strokes)
+            rotated_strokes = _rotate_strokes(raw_char.strokes, centre_of_mass, slant)
+            glyph = Glyph(character_id, "rotated_sample_123" + character_id, [np.array(stroke) for stroke in rotated_strokes])
+
+            raw_sequence.append(raw_char)
+            rotation_sequence.append(glyph)
+
+        draw_chars(raw_sequence + rotation_sequence, 3)
+
+    @unittest.skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true", "skipping glyphs' plotting")
     def test_preprocess_sample(self):
         raw_dict, prep_dict = np.array(list(raw_glyphs_dict(mapping))), preprocessed_glyphs_dict(mapping)
 

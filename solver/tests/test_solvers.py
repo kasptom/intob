@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from data import Glyph, preprocessed_glyphs_dict
-from model.raw_chars_to_vector import to_vector_m, to_vector_72
+from model.raw_chars_to_vector import to_vector_m, to_vector_whd
 from utils.mappings.penchars_mapping_2 import mapping
 from utils.plotting import draw_chars
 
@@ -43,7 +43,7 @@ class TestSolvers(TestCase):
         inv_map = {v: k for k, v in mapping.items()}
         answers = []
         for glyph in self.prep_sample:
-            result = softmax_model.predict(np.array([to_vector_72(glyph)[0]]))
+            result = softmax_model.predict(np.array([to_vector_whd(glyph)[0]]))
             answers.append(inv_map[np.argmax(result)])
         print(answers)
 
